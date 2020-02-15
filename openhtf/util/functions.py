@@ -17,6 +17,7 @@
 import collections
 import functools
 import inspect
+import sys
 import time
 
 
@@ -27,8 +28,13 @@ def call_once(func):
   arguments (use @functools.lru_cache for that sort of thing), so this only
   works on callables that take no args.
   """
-  argspec = inspect.getargspec(func)
-  if argspec.args or argspec.varargs or argspec.keywords:
+  if sys.version_info[0] < 3:
+    argspec = inspect.getargspec(func)
+    keywords = argspec.keywords
+  else:
+    argspec = inspect.getfullargspec(func)
+    keywords = argspec.varkw
+  if argspec.args or argspec.varargs or keywords:
     raise ValueError('Can only decorate functions with no args', func, argspec)
 
   @functools.wraps(func)

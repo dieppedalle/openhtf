@@ -289,7 +289,10 @@ def patch_plugs(**mock_plugs):
     Function decorator that mocks plugs.
   """
   def test_wrapper(test_func):
-    plug_argspec = inspect.getargspec(test_func)
+    if sys.version_info[0] < 3:
+      plug_argspec = inspect.getargspec(test_func)
+    else:
+      plug_argspec = inspect.getfullargspec(test_func)
     num_defaults = len(plug_argspec.defaults or ())
     plug_args = set(plug_argspec.args[1:-num_defaults or None])
 

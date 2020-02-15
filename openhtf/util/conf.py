@@ -568,7 +568,10 @@ class Configuration(object):  # pylint: disable=too-many-instance-attributes
     configuration values for positional arguments.
     """
     inspect = self._modules['inspect']
-    argspec = inspect.getargspec(method)
+    if sys.version_info[0] < 3:
+      argspec = inspect.getargspec(method)
+    else:
+      argspec = inspect.getfullargspec(method)
 
     # Index in argspec.args of the first keyword argument.  This index is a
     # negative number if there are any kwargs, or 0 if there are no kwargs.

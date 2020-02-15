@@ -47,6 +47,7 @@ def MyPhase(test):
 
 import functools
 import inspect
+import sys
 import time
 
 import openhtf
@@ -71,8 +72,13 @@ class _MonitorThread(threads.KillableThread):
     self.extra_kwargs = extra_kwargs
 
   def get_value(self):
-    arg_info = inspect.getargspec(self.monitor_desc.func)
-    if arg_info.keywords:
+    if sys.version_info[0] < 3:
+      arg_info = inspect.getargspec(self.monitor_desc.func)
+      keywords = arg_info.keywords
+    else:
+      arg_info = inspect.getfullargspec(self.monitor_desc.func)
+      keywords = arg_info.varkw
+    if keywords:
       # Monitor phase takes **kwargs, so just pass everything in.
       kwargs = self.extra_kwargs
     else:
